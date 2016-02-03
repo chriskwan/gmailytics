@@ -1,4 +1,4 @@
-<!-- https://developers.google.com/gmail/api/quickstart/js -->
+<!-- From: https://developers.google.com/gmail/api/quickstart/js -->
 <html>
     <head>
         <script src="credentials.js"></script><!-- cwkTODO research a better way to do this -->
@@ -10,118 +10,118 @@
             /**
              * Check if current user has authorized this application.
              */
-             function checkAuth() {
-                gapi.auth.authorize({
-                    client_id : CLIENT_ID,
-                    scope : SCOPES.join(' '),
-                    immediate :  true
-                }, handleAuthResult);
-             }
+            function checkAuth() {
+               gapi.auth.authorize({
+                   client_id : CLIENT_ID,
+                   scope : SCOPES.join(' '),
+                   immediate :  true
+               }, handleAuthResult);
+            }
 
-             /**
-              * Handle response from authorization server.
-              * 
-              * @param {Object} authResult Authorization result.
-              */
-             function handleAuthResult(authResult) {
-                var authorizeDiv = document.getElementById('authorize-div');
-                if (authResult && !authResult.error) {
-                    // Hide auth UI, then load client library.
-                    authorizeDiv.style.display = 'none';
-                    loadGmailApi();
-                } else {
-                    // Show auth UI, allowing the user to initiate authorization by
-                    // clicking authorize button.
-                    authorizeDiv.style.display = 'inline';
-                }
-             }
+            /**
+             * Handle response from authorization server.
+             * 
+             * @param {Object} authResult Authorization result.
+             */
+            function handleAuthResult(authResult) {
+               var authorizeDiv = document.getElementById('authorize-div');
+               if (authResult && !authResult.error) {
+                   // Hide auth UI, then load client library.
+                   authorizeDiv.style.display = 'none';
+                   loadGmailApi();
+               } else {
+                   // Show auth UI, allowing the user to initiate authorization by
+                   // clicking authorize button.
+                   authorizeDiv.style.display = 'inline';
+               }
+            }
 
-             /**
-              * Initiate auth flow in response to user clicking authorize button.
-              *
-              * @param {Event} event Button click event.
-              */
-             function handleAuthClick(event) {
-                gapi.auth.authorize({
-                    client_id : CLIENT_ID,
-                    scope : SCOPES,
-                    immediate : false
-                }, handleAuthResult);
+            /**
+             * Initiate auth flow in response to user clicking authorize button.
+             *
+             * @param {Event} event Button click event.
+             */
+            function handleAuthClick(event) {
+               gapi.auth.authorize({
+                   client_id : CLIENT_ID,
+                   scope : SCOPES,
+                   immediate : false
+               }, handleAuthResult);
 
-                return false;
-             }
+               return false;
+            }
 
-             /**
-              * Load Gmail API client library. List labels once client library
-              * is loaded.
-              */
-             function loadGmailApi() {
-                gapi.client.load('gmail', 'v1', listItems);
-             }
+            /**
+             * Load Gmail API client library. List labels once client library
+             * is loaded.
+             */
+            function loadGmailApi() {
+               gapi.client.load('gmail', 'v1', listItems);
+            }
 
-             function listItems() {
-                listLabels();
-                listMessages();
-             }
+            function listItems() {
+               listLabels();
+               listMessages();
+            }
 
-             /**
-              * Print all Labels in the authorized user's inbox. If no labels
-              * are found, an appropriate message is printed.
-              */
-             function listLabels() {
-                var request = gapi.client.gmail.users.labels.list({
-                    userId : 'me'
-                });
+            /**
+             * Print all Labels in the authorized user's inbox. If no labels
+             * are found, an appropriate message is printed.
+             */
+            function listLabels() {
+               var request = gapi.client.gmail.users.labels.list({
+                   userId : 'me'
+               });
 
-                request.execute(function(resp) {
-                    var labels = resp.labels;
-                    appendPre('Labels:');
+               request.execute(function(resp) {
+                   var labels = resp.labels;
+                   appendPre('Labels:');
 
-                    if (labels && labels.length > 0) {
-                        for (var i = 0; i < labels.length; i++) {
-                            var label = labels[i];
-                            appendPre(label.name);
-                        }
-                    } else {
-                        appendPre('No Labels found.');
-                    }
-                });
-             }
+                   if (labels && labels.length > 0) {
+                       for (var i = 0; i < labels.length; i++) {
+                           var label = labels[i];
+                           appendPre(label.name);
+                       }
+                   } else {
+                       appendPre('No Labels found.');
+                   }
+               });
+            }
 
-             function listMessages() {
-                var request = gapi.client.gmail.users.messages.list({
-                    userId: 'me'
-                });
+            function listMessages() {
+               var request = gapi.client.gmail.users.messages.list({
+                   userId: 'me'
+               });
 
-                request.execute(function(resp) {
-                    var messages = resp.messages;
-                    appendPre('Messages:');
+               request.execute(function(resp) {
+                   var messages = resp.messages;
+                   appendPre('Messages:');
 
-                    if (messages && messages.length > 0) {
-                        for (var i = 0; i < messages.length; i++) {
-                            var messageId = messages[i].id;
-                            printMessage(messageId);
-                        }
-                    } else {
-                        appendPre('No Messages found.');
-                    }
-                });
-             }
+                   if (messages && messages.length > 0) {
+                       for (var i = 0; i < messages.length; i++) {
+                           var messageId = messages[i].id;
+                           printMessage(messageId);
+                       }
+                   } else {
+                       appendPre('No Messages found.');
+                   }
+               });
+            }
 
-             function printMessage(id) {
-                var request = gapi.client.gmail.users.messages.get({
-                    userId: 'me',
-                    id: id
-                });
+            function printMessage(id) {
+               var request = gapi.client.gmail.users.messages.get({
+                   userId: 'me',
+                   id: id
+               });
 
-                request.execute(function(resp) {
-                    if (isChat(resp)) {
-                        appendPreForMessage(resp.snippet, "CHAT");
-                    } else {
-                        appendPreForMessage(resp.snippet);
-                    }
-                });
-             }
+               request.execute(function(resp) {
+                   if (isChat(resp)) {
+                       appendPreForMessage(resp.snippet, "CHAT");
+                   } else {
+                       appendPreForMessage(resp.snippet);
+                   }
+               });
+            }
 
 
             function isChat(message) {
@@ -140,26 +140,26 @@
                 return false;
             }
 
-             /**
-              * Append a pre element to the body containing the given message
-              * as its text node.
-              *
-              * @param {string} message Text to be placed in pre element.
-              */
-             function appendPre(message) {
-                var pre = document.getElementById('output');
-                var textContent = document.createTextNode(message + '\n');
-                pre.appendChild(textContent);
-             }
+            /**
+             * Append a pre element to the body containing the given message
+             * as its text node.
+             *
+             * @param {string} message Text to be placed in pre element.
+             */
+            function appendPre(message) {
+               var pre = document.getElementById('output');
+               var textContent = document.createTextNode(message + '\n');
+               pre.appendChild(textContent);
+            }
 
-             function appendPreForMessage(message, type) {
-                var pre = document.getElementById('email');
-                if (type === "CHAT") {
-                    pre = document.getElementById('chat');
-                }
-                var textContent = document.createTextNode("-" + message + '\n');
-                pre.appendChild(textContent);
-             }
+            function appendPreForMessage(message, type) {
+               var pre = document.getElementById('email');
+               if (type === "CHAT") {
+                   pre = document.getElementById('chat');
+               }
+               var textContent = document.createTextNode("-" + message + '\n');
+               pre.appendChild(textContent);
+            }
 
         </script>
         <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
