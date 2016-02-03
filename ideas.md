@@ -1,10 +1,10 @@
 # Ideas
 
 ## Workflow
-1 Take in email address and authenticate user
-1 Get all threads / messages from the inbox
-1 Analytics
-1 Profit!
+1. Take in email address and authenticate user
+1. Get all threads / messages from the inbox
+1. Analytics
+1. Profit!
 
 ## Possible questions to answer
 * Which emails (senders/subjects) do I tend to ignore (not open but leave in the inbox)?
