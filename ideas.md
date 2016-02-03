@@ -10,6 +10,9 @@
 * Which emails (senders/subjects) do I tend to ignore (not open but leave in the inbox)?
 * Who sends me the most ignored messages?
 * If I delete/unsubscribe from this type of email, how much does that clear my inbox?
+* Time elapsed since open - do you actually care about the email 
+* Who are the worst offenders - how much junk mail do they send
+* how many stars in inbox
 
 
 ## Possible things to analyze
