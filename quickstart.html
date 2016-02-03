@@ -56,7 +56,12 @@
               * is loaded.
               */
              function loadGmailApi() {
-                gapi.client.load('gmail', 'v1', listLabels);
+                gapi.client.load('gmail', 'v1', listItems);
+             }
+
+             function listItems() {
+                listLabels();
+                listMessages();
              }
 
              /**
@@ -83,6 +88,58 @@
                 });
              }
 
+             function listMessages() {
+                var request = gapi.client.gmail.users.messages.list({
+                    userId: 'me'
+                });
+
+                request.execute(function(resp) {
+                    var messages = resp.messages;
+                    appendPre('Messages:');
+
+                    if (messages && messages.length > 0) {
+                        for (var i = 0; i < messages.length; i++) {
+                            var messageId = messages[i].id;
+                            printMessage(messageId);
+                        }
+                    } else {
+                        appendPre('No Messages found.');
+                    }
+                });
+             }
+
+             function printMessage(id) {
+                var request = gapi.client.gmail.users.messages.get({
+                    userId: 'me',
+                    id: id
+                });
+
+                request.execute(function(resp) {
+                    if (isChat(resp)) {
+                        appendPreForMessage(resp.snippet, "CHAT");
+                    } else {
+                        appendPreForMessage(resp.snippet);
+                    }
+                });
+             }
+
+
+            function isChat(message) {
+                var labels = message.labelIds;
+
+                if (!labels || labels.length < 1) {
+                    return false;
+                }
+
+                for (var i=0; i<labels.length; i++) {
+                    if (labels[i].toUpperCase() === "CHAT") {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
              /**
               * Append a pre element to the body containing the given message
               * as its text node.
@@ -94,6 +151,16 @@
                 var textContent = document.createTextNode(message + '\n');
                 pre.appendChild(textContent);
              }
+
+             function appendPreForMessage(message, type) {
+                var pre = document.getElementById('email');
+                if (type === "CHAT") {
+                    pre = document.getElementById('chat');
+                }
+                var textContent = document.createTextNode("-" + message + '\n');
+                pre.appendChild(textContent);
+             }
+
         </script>
         <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
     </head>
@@ -106,5 +173,11 @@
             </button>
         </div>
         <pre id="output"></pre>
+
+        <h2>Emails:</h2>
+        <pre id="email"></pre>
+
+        <h2>Chats:</h2>
+        <pre id="chat"></pre>
     </body>
 </html>
