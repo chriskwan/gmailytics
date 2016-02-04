@@ -1,0 +1,21 @@
+<!-- From: https://developers.google.com/gmail/api/quickstart/js -->
+<html>
+    <head>
+        <script src="credentials.js"></script><!-- cwkTODO research a better way to do this -->
+        <script src="Message.js"></script>
+        <script src="dashboard.js"></script>
+        <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+    </head>
+    <body>
+        <div id="authorize-div" style="display: none">
+            <span>Authorize access to Gmail API</span>
+            <!-- Button for the user to click to initiate auth sequence -->
+            <button id="authorize-button" onclick="handleAuthClick(event)">
+                Authorize
+            </button>
+        </div>
+
+        <h2>Emails:</h2>
+        <pre id="email"></pre>
+    </body>
+</html>
