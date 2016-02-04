@@ -54,8 +54,13 @@ function makeEmailsBySenderChart() {
         }
     }
 
-    debugger;
     var data = [];
+
+    for (var prop in dict) {
+        if (dict.hasOwnProperty(prop)){
+            data.push(dict[prop]);
+        }
+    }
 }
 
 /**
