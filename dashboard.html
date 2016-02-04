@@ -62,34 +62,9 @@
                gapi.client.load('gmail', 'v1', listItems);
             }
 
+            // Add other items to list here
             function listItems() {
-               //listLabels();
                listMessages();
-               //listThreads();
-            }
-
-            /**
-             * Print all Labels in the authorized user's inbox. If no labels
-             * are found, an appropriate message is printed.
-             */
-            function listLabels() {
-               var request = gapi.client.gmail.users.labels.list({
-                   userId : 'me'
-               });
-
-               request.execute(function(resp) {
-                   var labels = resp.labels;
-                   appendPre('Labels:');
-
-                   if (labels && labels.length > 0) {
-                       for (var i = 0; i < labels.length; i++) {
-                           var label = labels[i];
-                           appendPre(label.name);
-                       }
-                   } else {
-                       appendPre('No Labels found.');
-                   }
-               });
             }
 
             function listMessages() {
@@ -99,7 +74,6 @@
 
                request.execute(function(resp) {
                    var messages = resp.messages;
-                   appendPre('Messages:');
 
                    if (messages && messages.length > 0) {
                        for (var i = 0; i < messages.length; i++) {
@@ -112,26 +86,6 @@
                });
             }
 
-            function listThreads() {
-               var request = gapi.client.gmail.users.threads.list({
-                   userId: 'me'
-               });
-
-               request.execute(function(resp) {
-                   var threads = resp.threads;
-                   appendPre('Threads:');
-
-                   if (threads && threads.length > 0) {
-                       for (var i = 0; i < threads.length; i++) {
-                           var threadId = threads[i].id;
-                           printThread(threadId);
-                       }
-                   } else {
-                       appendPre('No Threas found.');
-                   }
-               });
-            }
-
             function printMessage(id) {
                 var request = gapi.client.gmail.users.messages.get({
                    userId: 'me',
@@ -139,45 +93,26 @@
                 });
 
                 request.execute(function(resp) {
+                    //cwkTODO apply this filter in the query?
+                    if (hasLabel(resp, "INBOX") && !hasLabel(resp, "CHAT")) {
+                        var headers = resp.payload.headers;
+                        var message = new Message();
 
-                    if (isChat(resp)) {
-                        appendPreForMessage(resp.snippet, "CHAT");
-                    } else {
+                        message.id = resp.id;
+                        message.sender = getHeaderValue(headers, "From");
+                        message.senderIPAddress = getSenderIPAddress(resp, headers);
+                        message.isRead = !hasLabel(resp, "UNREAD");
+                        message.isStarred = hasLabel(resp, "STARRED");
+                        message.date = getHeaderValue(headers, "Date");
+                        message.dayOfWeek = new Date(message.date).getDay();
+                        //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
+                        message.snippet = resp.snippet;
+
+                        messagesForViz.push(message);
+
                         appendPreForMessage(resp.snippet);
-
-                        if (hasLabel(resp, "INBOX")) { //cwkTODO apply this filter in the query?
-                            var headers = resp.payload.headers;
-                            var message = new Message();
-
-                            message.id = resp.id;
-                            message.sender = getHeaderValue(headers, "From");
-                            message.senderIPAddress = getSenderIPAddress(resp, headers);
-                            message.isRead = !hasLabel(resp, "UNREAD");
-                            message.isStarred = hasLabel(resp, "STARRED");
-                            message.date = getHeaderValue(headers, "Date");
-                            message.dayOfWeek = new Date(message.date).getDay();
-                            //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
-                            message.snippet = resp.snippet;
-
-                            messagesForViz.push(message);
-                        }
                     }
                 });
-            }
-
-            function printThread(id) {
-               var request = gapi.client.gmail.users.threads.get({
-                   userId: 'me',
-                   id: id
-               });
-
-               request.execute(function(resp) {
-                   if (isChat(resp)) {
-                       appendPreForMessage(resp.snippet, "CHAT");
-                   } else {
-                       appendPreForMessage(resp.snippet);
-                   }
-               });
             }
 
             function hasLabel(message, label) {
@@ -194,11 +129,6 @@
                 }
 
                 return false;
-            }
-
-
-            function isChat(message) {
-                return hasLabel(message, "CHAT");
             }
 
             function getHeaderValue(headers, name) {
@@ -225,23 +155,8 @@
                 return ipMatches ? ipMatches[0] : null;
             }
 
-            /**
-             * Append a pre element to the body containing the given message
-             * as its text node.
-             *
-             * @param {string} message Text to be placed in pre element.
-             */
-            function appendPre(message) {
-               var pre = document.getElementById('output');
-               var textContent = document.createTextNode(message + '\n');
-               pre.appendChild(textContent);
-            }
-
             function appendPreForMessage(message, type) {
                var pre = document.getElementById('email');
-               if (type === "CHAT") {
-                   pre = document.getElementById('chat');
-               }
                var textContent = document.createTextNode("-" + message + '\n');
                pre.appendChild(textContent);
             }
@@ -257,12 +172,8 @@
                 Authorize
             </button>
         </div>
-        <pre id="output"></pre>
 
         <h2>Emails:</h2>
         <pre id="email"></pre>
-
-        <h2>Chats:</h2>
-        <pre id="chat"></pre>
     </body>
 </html>
