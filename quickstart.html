@@ -62,6 +62,7 @@
             function listItems() {
                listLabels();
                listMessages();
+               listThreads();
             }
 
             /**
@@ -108,8 +109,43 @@
                });
             }
 
+            function listThreads() {
+               var request = gapi.client.gmail.users.threads.list({
+                   userId: 'me'
+               });
+
+               request.execute(function(resp) {
+                   var threads = resp.threads;
+                   appendPre('Threads:');
+
+                   if (threads && threads.length > 0) {
+                       for (var i = 0; i < threads.length; i++) {
+                           var threadId = threads[i].id;
+                           printThread(threadId);
+                       }
+                   } else {
+                       appendPre('No Threas found.');
+                   }
+               });
+            }
+
             function printMessage(id) {
                var request = gapi.client.gmail.users.messages.get({
+                   userId: 'me',
+                   id: id
+               });
+
+               request.execute(function(resp) {
+                   if (isChat(resp)) {
+                       appendPreForMessage(resp.snippet, "CHAT");
+                   } else {
+                       appendPreForMessage(resp.snippet);
+                   }
+               });
+            }
+
+            function printThread(id) {
+               var request = gapi.client.gmail.users.threads.get({
                    userId: 'me',
                    id: id
                });
