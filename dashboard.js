@@ -4,6 +4,7 @@ var CLIENT_ID = gmailyticsClientID;
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
 var messagesForViz = [];
+var totalEmails = 0;
 
 /**
  * Check if current user has authorized this application.
@@ -32,6 +33,29 @@ function handleAuthResult(authResult) {
        // clicking authorize button.
        authorizeDiv.style.display = 'inline';
    }
+}
+
+function handleMakeChartsClick(event) {
+    makeEmailsBySenderChart();
+}
+
+function makeEmailsBySenderChart() {
+    var dict = {};
+
+    for (var i=0; i<messagesForViz.length; i++) {
+        var sender = messagesForViz[i].senderDomain;
+        if (!dict.hasOwnProperty(sender)) {
+            dict[sender] = {
+                name: sender,
+                count: 1
+            };
+        } else {
+            dict[sender].count++;
+        }
+    }
+
+    debugger;
+    var data = [];
 }
 
 /**
@@ -95,6 +119,7 @@ function printMessage(id) {
 
             message.id = resp.id;
             message.sender = getHeaderValue(headers, "From");
+            message.senderDomain = getSenderDomain(message.sender);
             message.senderIPAddress = getSenderIPAddress(resp, headers);
             message.isRead = !hasLabel(resp, "UNREAD");
             message.isStarred = hasLabel(resp, "STARRED");
@@ -104,6 +129,9 @@ function printMessage(id) {
             message.snippet = resp.snippet;
 
             messagesForViz.push(message);
+
+            totalEmails++;
+            document.getElementById("emailsHeader").innerText = "Emails (" + totalEmails + "):";
 
             appendPreForMessage(resp.snippet);
         }
@@ -139,6 +167,11 @@ function getHeaderValue(headers, name) {
     }
 
     return null;
+}
+
+function getSenderDomain(senderStr) {
+    var matches = senderStr.match(/@((\w*\.)*(\w*\.\w*))/);
+    return matches ? matches[3] : null;
 }
 
 function getSenderIPAddress(message, headers) {
