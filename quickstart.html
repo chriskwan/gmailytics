@@ -1,0 +1,268 @@
+<!-- From: https://developers.google.com/gmail/api/quickstart/js -->
+<html>
+    <head>
+        <script src="credentials.js"></script><!-- cwkTODO research a better way to do this -->
+        <script src="Message.js"></script>
+        <script type="text/javascript">
+            var CLIENT_ID = gmailyticsClientID;
+
+            var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+
+            var messagesForViz = [];
+
+            /**
+             * Check if current user has authorized this application.
+             */
+            function checkAuth() {
+               gapi.auth.authorize({
+                   client_id : CLIENT_ID,
+                   scope : SCOPES.join(' '),
+                   immediate :  true
+               }, handleAuthResult);
+            }
+
+            /**
+             * Handle response from authorization server.
+             * 
+             * @param {Object} authResult Authorization result.
+             */
+            function handleAuthResult(authResult) {
+               var authorizeDiv = document.getElementById('authorize-div');
+               if (authResult && !authResult.error) {
+                   // Hide auth UI, then load client library.
+                   authorizeDiv.style.display = 'none';
+                   loadGmailApi();
+               } else {
+                   // Show auth UI, allowing the user to initiate authorization by
+                   // clicking authorize button.
+                   authorizeDiv.style.display = 'inline';
+               }
+            }
+
+            /**
+             * Initiate auth flow in response to user clicking authorize button.
+             *
+             * @param {Event} event Button click event.
+             */
+            function handleAuthClick(event) {
+               gapi.auth.authorize({
+                   client_id : CLIENT_ID,
+                   scope : SCOPES,
+                   immediate : false
+               }, handleAuthResult);
+
+               return false;
+            }
+
+            /**
+             * Load Gmail API client library. List labels once client library
+             * is loaded.
+             */
+            function loadGmailApi() {
+               gapi.client.load('gmail', 'v1', listItems);
+            }
+
+            function listItems() {
+               //listLabels();
+               listMessages();
+               //listThreads();
+            }
+
+            /**
+             * Print all Labels in the authorized user's inbox. If no labels
+             * are found, an appropriate message is printed.
+             */
+            function listLabels() {
+               var request = gapi.client.gmail.users.labels.list({
+                   userId : 'me'
+               });
+
+               request.execute(function(resp) {
+                   var labels = resp.labels;
+                   appendPre('Labels:');
+
+                   if (labels && labels.length > 0) {
+                       for (var i = 0; i < labels.length; i++) {
+                           var label = labels[i];
+                           appendPre(label.name);
+                       }
+                   } else {
+                       appendPre('No Labels found.');
+                   }
+               });
+            }
+
+            function listMessages() {
+               var request = gapi.client.gmail.users.messages.list({
+                   userId: 'me'
+               });
+
+               request.execute(function(resp) {
+                   var messages = resp.messages;
+                   appendPre('Messages:');
+
+                   if (messages && messages.length > 0) {
+                       for (var i = 0; i < messages.length; i++) {
+                           var messageId = messages[i].id;
+                           printMessage(messageId);
+                       }
+                   } else {
+                       appendPre('No Messages found.');
+                   }
+               });
+            }
+
+            function listThreads() {
+               var request = gapi.client.gmail.users.threads.list({
+                   userId: 'me'
+               });
+
+               request.execute(function(resp) {
+                   var threads = resp.threads;
+                   appendPre('Threads:');
+
+                   if (threads && threads.length > 0) {
+                       for (var i = 0; i < threads.length; i++) {
+                           var threadId = threads[i].id;
+                           printThread(threadId);
+                       }
+                   } else {
+                       appendPre('No Threas found.');
+                   }
+               });
+            }
+
+            function printMessage(id) {
+                var request = gapi.client.gmail.users.messages.get({
+                   userId: 'me',
+                   id: id
+                });
+
+                request.execute(function(resp) {
+
+                    if (isChat(resp)) {
+                        appendPreForMessage(resp.snippet, "CHAT");
+                    } else {
+                        appendPreForMessage(resp.snippet);
+
+                        if (hasLabel(resp, "INBOX")) { //cwkTODO apply this filter in the query?
+                            var headers = resp.payload.headers;
+                            var message = new Message();
+
+                            message.id = resp.id;
+                            message.sender = getHeaderValue(headers, "From");
+                            message.senderIPAddress = getSenderIPAddress(resp, headers);
+                            message.isRead = !hasLabel(resp, "UNREAD");
+                            message.isStarred = hasLabel(resp, "STARRED");
+                            message.date = getHeaderValue(headers, "Date");
+                            message.dayOfWeek = new Date(message.date).getDay();
+                            //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
+                            message.snippet = resp.snippet;
+
+                            messagesForViz.push(message);
+                        }
+                    }
+                });
+            }
+
+            function printThread(id) {
+               var request = gapi.client.gmail.users.threads.get({
+                   userId: 'me',
+                   id: id
+               });
+
+               request.execute(function(resp) {
+                   if (isChat(resp)) {
+                       appendPreForMessage(resp.snippet, "CHAT");
+                   } else {
+                       appendPreForMessage(resp.snippet);
+                   }
+               });
+            }
+
+            function hasLabel(message, label) {
+                var labels = message.labelIds;
+
+                if (!labels || labels.length < 1) {
+                    return false;
+                }
+
+                for (var i=0; i<labels.length; i++) {
+                    if (labels[i].toUpperCase() === label.toUpperCase()) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+
+            function isChat(message) {
+                return hasLabel(message, "CHAT");
+            }
+
+            function getHeaderValue(headers, name) {
+                if (!headers || !headers.length) {
+                    return null;
+                }
+
+                for (var i=0; i<headers.length; i++) {
+                    var header = headers[i];
+                    if (header.name.toLowerCase() === name.toLowerCase()) {
+                        return header.value;
+                    }
+                }
+
+                return null;
+            }
+
+            function getSenderIPAddress(message, headers) {
+                var receivedStr = getHeaderValue(headers, "Received");
+
+                // Ref: https://ctrlq.org/code/20046-email-ip-address
+                var ipMatches = receivedStr.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/);
+
+                return ipMatches ? ipMatches[0] : null;
+            }
+
+            /**
+             * Append a pre element to the body containing the given message
+             * as its text node.
+             *
+             * @param {string} message Text to be placed in pre element.
+             */
+            function appendPre(message) {
+               var pre = document.getElementById('output');
+               var textContent = document.createTextNode(message + '\n');
+               pre.appendChild(textContent);
+            }
+
+            function appendPreForMessage(message, type) {
+               var pre = document.getElementById('email');
+               if (type === "CHAT") {
+                   pre = document.getElementById('chat');
+               }
+               var textContent = document.createTextNode("-" + message + '\n');
+               pre.appendChild(textContent);
+            }
+
+        </script>
+        <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+    </head>
+    <body>
+        <div id="authorize-div" style="display: none">
+            <span>Authorize access to Gmail API</span>
+            <!-- Button for the user to click to initiate auth sequence -->
+            <button id="authorize-button" onclick="handleAuthClick(event)">
+                Authorize
+            </button>
+        </div>
+        <pre id="output"></pre>
+
+        <h2>Emails:</h2>
+        <pre id="email"></pre>
+
+        <h2>Chats:</h2>
+        <pre id="chat"></pre>
+    </body>
+</html>
