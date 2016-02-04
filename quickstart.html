@@ -2,10 +2,13 @@
 <html>
     <head>
         <script src="credentials.js"></script><!-- cwkTODO research a better way to do this -->
+        <script src="Message.js"></script>
         <script type="text/javascript">
             var CLIENT_ID = gmailyticsClientID;
 
             var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+
+            var messagesForViz = [];
 
             /**
              * Check if current user has authorized this application.
@@ -60,9 +63,9 @@
             }
 
             function listItems() {
-               listLabels();
+               //listLabels();
                listMessages();
-               listThreads();
+               //listThreads();
             }
 
             /**
@@ -130,18 +133,36 @@
             }
 
             function printMessage(id) {
-               var request = gapi.client.gmail.users.messages.get({
+                var request = gapi.client.gmail.users.messages.get({
                    userId: 'me',
                    id: id
-               });
+                });
 
-               request.execute(function(resp) {
-                   if (isChat(resp)) {
-                       appendPreForMessage(resp.snippet, "CHAT");
-                   } else {
-                       appendPreForMessage(resp.snippet);
-                   }
-               });
+                request.execute(function(resp) {
+
+                    if (isChat(resp)) {
+                        appendPreForMessage(resp.snippet, "CHAT");
+                    } else {
+                        appendPreForMessage(resp.snippet);
+
+                        if (hasLabel(resp, "INBOX")) { //cwkTODO apply this filter in the query?
+                            var headers = resp.payload.headers;
+                            var message = new Message();
+
+                            message.id = resp.id;
+                            message.sender = getHeaderValue(headers, "From");
+                            message.senderIPAddress = getSenderIPAddress(resp, headers);
+                            message.isRead = !hasLabel(resp, "UNREAD");
+                            message.isStarred = hasLabel(resp, "STARRED");
+                            message.date = getHeaderValue(headers, "Date");
+                            //message.dayOfWeek //cwkTODO
+                            //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
+                            message.snippet = resp.snippet;
+
+                            messagesForViz.push(message);
+                        }
+                    }
+                });
             }
 
             function printThread(id) {
@@ -159,8 +180,7 @@
                });
             }
 
-
-            function isChat(message) {
+            function hasLabel(message, label) {
                 var labels = message.labelIds;
 
                 if (!labels || labels.length < 1) {
@@ -168,12 +188,41 @@
                 }
 
                 for (var i=0; i<labels.length; i++) {
-                    if (labels[i].toUpperCase() === "CHAT") {
+                    if (labels[i].toUpperCase() === label.toUpperCase()) {
                         return true;
                     }
                 }
 
                 return false;
+            }
+
+
+            function isChat(message) {
+                return hasLabel(message, "CHAT");
+            }
+
+            function getHeaderValue(headers, name) {
+                if (!headers || !headers.length) {
+                    return null;
+                }
+
+                for (var i=0; i<headers.length; i++) {
+                    var header = headers[i];
+                    if (header.name.toLowerCase() === name.toLowerCase()) {
+                        return header.value;
+                    }
+                }
+
+                return null;
+            }
+
+            function getSenderIPAddress(message, headers) {
+                var receivedStr = getHeaderValue(headers, "Received");
+
+                // Ref: https://ctrlq.org/code/20046-email-ip-address
+                var ipMatches = receivedStr.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/);
+
+                return ipMatches ? ipMatches[0] : null;
             }
 
             /**
