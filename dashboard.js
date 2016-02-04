@@ -5,6 +5,7 @@ var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
 var messagesForViz = [];
 var totalEmails = 0;
+var dataForEmailsBySender;
 
 /**
  * Check if current user has authorized this application.
@@ -37,6 +38,7 @@ function handleAuthResult(authResult) {
 
 function handleMakeChartsClick(event) {
     makeEmailsBySenderChart();
+    drawEmailsBySenderChart();
 }
 
 function makeEmailsBySenderChart() {
@@ -61,6 +63,65 @@ function makeEmailsBySenderChart() {
             data.push(dict[prop]);
         }
     }
+
+    dataForEmailsBySender = data; //cwkTODO global bad I know
+}
+
+function drawEmailsBySenderChart() {
+//cwkTODO chart stuff from my other project MOVE THIS
+    var w = 1000;
+    var h = 500;
+    var padding = 2; // space between bars
+    // var dataset = [5, 10, 13, 19, 21, 25,
+    //                 11, 25, 22, 18, 7];
+    var dataset = dataForEmailsBySender;
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    function colorPicker(v) {
+        if (v<=20) { return "#666666"; }
+        else if (v>20) { return "#FF0033"; }
+    }
+
+    svg.selectAll("rect")
+        .data(dataset)
+        .enter()
+        .append("rect")
+    .attr({
+        x: function(d, i) {
+            return i * (w/ dataset.length);
+        },
+        y: function(d) {
+            return h - (d.count*20);
+        },
+        width: w / dataset.length - padding,
+        height: function(d) {
+            return d.count*20;
+        },
+        fill: function(d) {
+            return colorPicker(d);
+        }
+    });
+
+    svg.selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .text(function(d) { return d.name; })
+        .attr({
+            "text-anchor": "middle",
+            x: function(d, i) {
+                return i * (w / dataset.length) + (w / dataset.length - padding) / 2;
+            },
+            y: function(d) {
+                return h - (d.count*20) + 14;
+            },
+            "font-family": "sans-serif",
+            "font-size": "12",
+            "fill": "#ffffff"
+        })
 }
 
 /**
