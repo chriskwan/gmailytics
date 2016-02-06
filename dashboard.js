@@ -90,16 +90,26 @@ function drawEmailsBySenderChart() {
         .enter()
         .append("rect")
     .attr({
-        x: function(d, i) {
-            return i * (w/ dataset.length);
+        // x: function(d, i) {
+        //     return i * (w/ dataset.length);
+        // },
+        // y: function(d) {
+        //     return h - (d.count*20);
+        // },
+        x: function(d) {
+            return 0;
         },
-        y: function(d) {
-            return h - (d.count*20);
+        y: function(d, i) {
+            return i * (h / dataset.length);
         },
-        width: w / dataset.length - padding,
-        height: function(d) {
-            return d.count*20;
+        //width: w / dataset.length - padding,
+        // height: function(d) {
+        //     return d.count*20;
+        // },
+        width: function (d) {
+            return d.count * 20;
         },
+        height: h / dataset.length,
         fill: function(d) {
             return colorPicker(d);
         }
@@ -112,11 +122,18 @@ function drawEmailsBySenderChart() {
         .text(function(d) { return d.name; })
         .attr({
             "text-anchor": "middle",
-            x: function(d, i) {
-                return i * (w / dataset.length) + (w / dataset.length - padding) / 2;
+            // x: function(d, i) {
+            //     return i * (w / dataset.length) + (w / dataset.length - padding) / 2;
+            // },
+            // y: function(d) {
+            //     return h - (d.count*20) + 14;
+            // },
+            x: function(d) {
+                //return w - (d.count*20) + 14;
+                return 0 + 14;
             },
-            y: function(d) {
-                return h - (d.count*20) + 14;
+            y: function(d, i) {
+                return i * (h / dataset.length) + (h / dataset.length - padding) / 2;
             },
             "font-family": "sans-serif",
             "font-size": "12",
