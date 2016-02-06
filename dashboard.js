@@ -81,19 +81,17 @@ function makeEmailsBySenderChart() {
 
 function drawEmailsBySenderChart() {
 //cwkTODO chart stuff from my other project MOVE THIS
+
     var w = 1000;
     var h = 500;
     var padding = 2; // space between bars
-    // var dataset = [5, 10, 13, 19, 21, 25,
-    //                 11, 25, 22, 18, 7];
-
     var minBarWidth = 100;
-
-    var dataset = dataForEmailsBySender;
 
     var svg = d3.select("body").append("svg")
         .attr("width", w)
         .attr("height", h);
+
+    var dataset = dataForEmailsBySender;
 
     function colorPicker(v) {
         if (v<=20) { return "#666666"; }
@@ -176,7 +174,14 @@ function handleAuthClick(event) {
  * is loaded.
  */
 function loadGmailApi() {
-   gapi.client.load('gmail', 'v1', listItems);
+    // cwkTODO for now cache the messages while we are developing
+    var messagesFromSession = sessionStorage.getItem("messagesForViz");
+    messagesForViz = messagesFromSession ? JSON.parse(messagesFromSession) : [];
+    if (!messagesForViz.length) {
+        gapi.client.load('gmail', 'v1', listItems);
+    } else {
+        appendPre('Messages already loaded');
+    }
 }
 
 // Add other items to list here
@@ -227,6 +232,7 @@ function printMessage(id) {
             message.snippet = resp.snippet;
 
             messagesForViz.push(message);
+            sessionStorage.setItem("messagesForViz", JSON.stringify(messagesForViz));
 
             totalEmails++;
             document.getElementById("emailsHeader").innerText = "Emails (" + totalEmails + "):";
@@ -279,6 +285,18 @@ function getSenderIPAddress(message, headers) {
     var ipMatches = receivedStr.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/);
 
     return ipMatches ? ipMatches[0] : null;
+}
+
+/**
+ * Append a pre element to the body containing the given message
+ * as its text node.
+ *
+ * @param {string} message Text to be placed in pre element.
+ */
+function appendPre(message) {
+    var pre = document.getElementById('output');
+    var textContent = document.createTextNode(message + '\n');
+    pre.appendChild(textContent);
 }
 
 function appendPreForMessage(message, type) {
