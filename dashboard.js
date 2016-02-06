@@ -74,6 +74,9 @@ function drawEmailsBySenderChart() {
     var padding = 2; // space between bars
     // var dataset = [5, 10, 13, 19, 21, 25,
     //                 11, 25, 22, 18, 7];
+
+    var minBarWidth = 100;
+
     var dataset = dataForEmailsBySender;
 
     var svg = d3.select("body").append("svg")
@@ -100,14 +103,14 @@ function drawEmailsBySenderChart() {
             return 0;
         },
         y: function(d, i) {
-            return i * (h / dataset.length);
+            return i * (h / dataset.length) + padding;
         },
         //width: w / dataset.length - padding,
         // height: function(d) {
         //     return d.count*20;
         // },
         width: function (d) {
-            return d.count * 20;
+            return d.count * minBarWidth;
         },
         height: h / dataset.length,
         fill: function(d) {
@@ -121,7 +124,7 @@ function drawEmailsBySenderChart() {
         .append("text")
         .text(function(d) { return d.name; })
         .attr({
-            "text-anchor": "middle",
+            "text-anchor": "start",
             // x: function(d, i) {
             //     return i * (w / dataset.length) + (w / dataset.length - padding) / 2;
             // },
@@ -130,7 +133,7 @@ function drawEmailsBySenderChart() {
             // },
             x: function(d) {
                 //return w - (d.count*20) + 14;
-                return 0 + 14;
+                return 0 + 50;
             },
             y: function(d, i) {
                 return i * (h / dataset.length) + (h / dataset.length - padding) / 2;
