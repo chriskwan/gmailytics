@@ -127,7 +127,9 @@ function drawEmailsBySenderChart() {
         .data(dataset)
         .enter()
         .append("text")
-        .text(function(d) { return d.name; })
+        .text(function(d) {
+            return d.name + " (" + d.count + ")";
+        })
         .attr({
             "text-anchor": "start",
             x: function(d) {
