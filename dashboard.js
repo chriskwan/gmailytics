@@ -7,6 +7,8 @@ var messagesForViz = [];
 var totalEmails = 0;
 var dataForEmailsBySender;
 
+var storage = sessionStorage;
+
 /**
  * Check if current user has authorized this application.
  */
@@ -165,13 +167,17 @@ function handleAuthClick(event) {
  */
 function loadGmailApi() {
     // cwkTODO for now cache the messages while we are developing
-    var messagesFromSession = sessionStorage.getItem("messagesForViz");
-    messagesForViz = messagesFromSession ? JSON.parse(messagesFromSession) : [];
+    messagesForViz = getItemFromStorage("messagesForViz") || [];
     if (!messagesForViz.length) {
         gapi.client.load('gmail', 'v1', listItems);
     } else {
         appendPre('Messages already loaded');
     }
+}
+
+function getItemFromStorage(itemName) {
+    var itemStr = storage.getItem(itemName);
+    return itemStr ? JSON.parse(itemStr) : null;
 }
 
 // Add other items to list here
@@ -222,7 +228,7 @@ function printMessage(id) {
             message.snippet = resp.snippet;
 
             messagesForViz.push(message);
-            sessionStorage.setItem("messagesForViz", JSON.stringify(messagesForViz));
+            setItemInStorage("messagesForViz", messagesForViz);
 
             totalEmails++;
             document.getElementById("emailsHeader").innerText = "Emails (" + totalEmails + "):";
@@ -230,6 +236,10 @@ function printMessage(id) {
             appendPreForMessage(resp.snippet);
         }
     });
+}
+
+function setItemInStorage(itemName, itemValue) {
+    storage.setItem(itemName, JSON.stringify(itemValue));
 }
 
 function hasLabel(message, label) {
