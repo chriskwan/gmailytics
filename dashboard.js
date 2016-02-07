@@ -82,14 +82,17 @@ function makeEmailsBySenderChart() {
 function drawEmailsBySenderChart() {
 //cwkTODO chart stuff from my other project MOVE THIS
 
-    var w = 1000;
+    var w = 500;
     var h = 500;
-    var padding = 2; // space between bars
+    var padding = 5; // space between bars
     var minBarWidth = 100;
 
     var svg = d3.select("body").append("svg")
         .attr("width", w)
-        .attr("height", h);
+        .attr("height", h)
+        .style({
+            "background-color": "green"
+        })
 
     var dataset = dataForEmailsBySender;
 
@@ -103,26 +106,18 @@ function drawEmailsBySenderChart() {
         .enter()
         .append("rect")
     .attr({
-        // x: function(d, i) {
-        //     return i * (w/ dataset.length);
-        // },
-        // y: function(d) {
-        //     return h - (d.count*20);
-        // },
         x: function(d) {
             return 0;
         },
         y: function(d, i) {
-            return i * (h / dataset.length) + padding;
+            return i * ( (h / dataset.length) + padding );
         },
-        //width: w / dataset.length - padding,
-        // height: function(d) {
-        //     return d.count*20;
-        // },
         width: function (d) {
             return d.count * minBarWidth;
         },
-        height: h / dataset.length,
+        height: function () {
+            return (h / dataset.length);
+        },
         fill: function(d) {
             return colorPicker(d);
         }
@@ -135,18 +130,11 @@ function drawEmailsBySenderChart() {
         .text(function(d) { return d.name; })
         .attr({
             "text-anchor": "start",
-            // x: function(d, i) {
-            //     return i * (w / dataset.length) + (w / dataset.length - padding) / 2;
-            // },
-            // y: function(d) {
-            //     return h - (d.count*20) + 14;
-            // },
             x: function(d) {
-                //return w - (d.count*20) + 14;
-                return 0 + 50;
+                return 0;
             },
             y: function(d, i) {
-                return i * (h / dataset.length) + (h / dataset.length - padding) / 2;
+                return i * ( (h / dataset.length) + padding ) + 10; //cwkTODO how to derive this magic number 10?
             },
             "font-family": "sans-serif",
             "font-size": "12",
