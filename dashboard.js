@@ -7,7 +7,8 @@ var messagesForViz = [];
 var totalEmails = 0;
 var dataForEmailsBySender;
 
-var storage = sessionStorage;
+//var storage = sessionStorage;
+var storage = localStorage; //cwkTODO use localStorage for now in case I don't have internet
 
 /**
  * Check if current user has authorized this application.
