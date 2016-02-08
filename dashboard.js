@@ -96,11 +96,6 @@ function drawEmailsBySenderChart() {
 
     var dataset = dataForEmailsBySender;
 
-    function colorPicker(v) {
-        if (v<=20) { return "#666666"; }
-        else if (v>20) { return "#FF0033"; }
-    }
-
     svg.selectAll("rect")
         .data(dataset)
         .enter()
@@ -119,7 +114,7 @@ function drawEmailsBySenderChart() {
             return (h / dataset.length);
         },
         fill: function(d) {
-            return colorPicker(d);
+            return getColor(d.count);
         }
     });
 
@@ -142,6 +137,14 @@ function drawEmailsBySenderChart() {
             "font-size": "12",
             "fill": "#ffffff"
         })
+}
+
+function getColor(value) {
+    var threshold = 5;
+    if (value >= threshold) {
+        return "#FF0033";
+    }
+    return "#666666";
 }
 
 /**
