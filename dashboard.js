@@ -1,5 +1,5 @@
 // From: https://developers.google.com/gmail/api/quickstart/js
-var CLIENT_ID = gmailyticsClientID;
+var CLIENT_ID = gmailytics.clientID;
 
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 

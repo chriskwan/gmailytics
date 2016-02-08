@@ -1,0 +1,1 @@
+window.gmailytics = window.gmailytics || {};
