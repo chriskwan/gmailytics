@@ -62,18 +62,13 @@ function loadGmailApi() {
     // cwkTODO for now cache the messages while we are developing
     messagesForViz = gmailytics.storage.get("messagesForViz") || [];
     if (!messagesForViz.length) {
-        gapi.client.load('gmail', 'v1', listItems);
+        gapi.client.load('gmail', 'v1', retrieveMessages);
     } else {
         appendPre('Messages already loaded');
     }
 }
 
-// Add other items to list here
-function listItems() {
-   listMessages();
-}
-
-function listMessages() {
+function retrieveMessages() {
    var request = gapi.client.gmail.users.messages.list({
        userId: 'me'
    });
