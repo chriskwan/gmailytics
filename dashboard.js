@@ -37,46 +37,7 @@ function handleAuthResult(authResult) {
 }
 
 function handleMakeChartsClick(event) {
-    makeEmailsBySenderChart();
-    gmailytics.charts.drawEmailsBySenderChart(dataForEmailsBySender);
-}
-
-function makeEmailsBySenderChart() {
-    var dict = {};
-
-    for (var i=0; i<messagesForViz.length; i++) {
-        var sender = messagesForViz[i].senderDomain;
-        if (!dict.hasOwnProperty(sender)) {
-            dict[sender] = {
-                name: sender,
-                count: 1
-            };
-        } else {
-            dict[sender].count++;
-        }
-    }
-
-    var data = [];
-
-    for (var prop in dict) {
-        if (dict.hasOwnProperty(prop)){
-            data.push(dict[prop]);
-        }
-    }
-
-    var reverseCompare = function(a,b) {
-        if (a.count < b.count) {
-            return 1;
-        }
-        if (a.count > b.count) {
-            return -1;
-        }
-        return 0;
-    };
-
-    data.sort(reverseCompare);
-
-    dataForEmailsBySender = data; //cwkTODO global bad I know
+    gmailytics.charts.emailsBySenderChart(messagesForViz);
 }
 
 /**
