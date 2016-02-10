@@ -5,7 +5,6 @@ var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
 var messagesForViz = [];
 var totalEmails = 0;
-var dataForEmailsBySender;
 
 /**
  * Check if current user has authorized this application.
