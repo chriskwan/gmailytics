@@ -102,20 +102,7 @@ function printMessage(id) {
     request.execute(function(resp) {
         //cwkTODO apply this filter in the query?
         if (hasLabel(resp, "INBOX") && !hasLabel(resp, "CHAT")) {
-            var headers = resp.payload.headers;
-            var message = new Message();
-
-            message.id = resp.id;
-            message.sender = getHeaderValue(headers, "From");
-            message.senderDomain = getSenderDomain(message.sender);
-            message.senderIPAddress = getSenderIPAddress(resp, headers);
-            message.isRead = !hasLabel(resp, "UNREAD");
-            message.isStarred = hasLabel(resp, "STARRED");
-            message.date = getHeaderValue(headers, "Date");
-            message.dayOfWeek = new Date(message.date).getDay();
-            //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
-            message.snippet = resp.snippet;
-
+            var message = createMessage(resp);
             messagesForViz.push(message);
             gmailytics.storage.set("messagesForViz", messagesForViz);
 
@@ -125,6 +112,24 @@ function printMessage(id) {
             appendPreForMessage(resp.snippet);
         }
     });
+}
+
+function createMessage(resp) {
+    var headers = resp.payload.headers;
+    var message = new Message();
+
+    message.id = resp.id;
+    message.sender = getHeaderValue(headers, "From");
+    message.senderDomain = getSenderDomain(message.sender);
+    message.senderIPAddress = getSenderIPAddress(resp, headers);
+    message.isRead = !hasLabel(resp, "UNREAD");
+    message.isStarred = hasLabel(resp, "STARRED");
+    message.date = getHeaderValue(headers, "Date");
+    message.dayOfWeek = new Date(message.date).getDay();
+    //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
+    message.snippet = resp.snippet;
+
+    return message;
 }
 
 function hasLabel(message, label) {
