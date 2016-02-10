@@ -1,7 +1,10 @@
 (function() {
     var dataForEmailsBySender;
+    var totalEmails;
 
     var makeEmailsBySenderChart = function(messagesForViz) {
+        totalEmails = messagesForViz.length;
+
         var dict = {};
 
         for (var i=0; i<messagesForViz.length; i++) {
@@ -47,6 +50,10 @@
         return "#666666";
     };
 
+    var getPercentage = function(count) {
+        return ((count / totalEmails) * 100).toFixed(2);
+    }
+
     var drawEmailsBySenderChart = function() {
         var w = 500;
         var h = 500;
@@ -89,7 +96,7 @@
             .enter()
             .append("text")
             .text(function(d) {
-                return d.name + " (" + d.count + ")";
+                return d.name + " (" + d.count + ") - " + getPercentage(d.count) + "%";
             })
             .attr({
                 "text-anchor": "start",

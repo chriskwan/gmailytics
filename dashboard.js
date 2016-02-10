@@ -4,7 +4,6 @@ var CLIENT_ID = gmailytics.clientID;
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
 var messagesForViz = [];
-var totalEmails = 0;
 
 /**
  * Check if current user has authorized this application.
@@ -99,10 +98,7 @@ function getAndCreateMessage(id) {
         if (message) {
             messagesForViz.push(message);
             gmailytics.storage.set("messagesForViz", messagesForViz);
-
-            totalEmails++;
-            document.getElementById("emailsHeader").innerText = "Emails (" + totalEmails + "):";
-
+            document.getElementById("emailsHeader").innerText = "Emails (" + messagesForViz.length + "):";
             appendPreForMessage(resp.snippet);
         }
     });
