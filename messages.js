@@ -1,4 +1,18 @@
 (function() {
+    // Constructor
+    var Message = function() {
+        return {
+            id: null,
+            sender: null,
+            senderIPAddress: null,
+            isRead: false,
+            isStarred: false,
+            date: null,
+            dayOfWeek: null,
+            location: null,
+            snippet: null
+        }
+    };
 
     var hasLabel = function(message, label) {
         var labels = message.labelIds;
@@ -47,6 +61,12 @@
 
     gmailytics.messages = {
         create: function(resp) {
+            //cwkTODO apply this filter in the query?
+            // For now, ignore non-inbox and chat messages
+            if (!hasLabel(resp, "INBOX") || hasLabel(resp, "CHAT")) {
+                return null;
+            }
+
             if (!resp || !resp.payload || !resp.payload.headers) {
                 return null;
             }

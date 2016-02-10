@@ -100,19 +100,16 @@ function printMessage(id) {
     });
 
     request.execute(function(resp) {
-        //cwkTODO apply this filter in the query?
-        if (hasLabel(resp, "INBOX") && !hasLabel(resp, "CHAT")) {
-            var message = gmailytics.messages.create(resp);
+        var message = gmailytics.messages.create(resp);
 
-            if (message) {
-                messagesForViz.push(message);
-                gmailytics.storage.set("messagesForViz", messagesForViz);
+        if (message) {
+            messagesForViz.push(message);
+            gmailytics.storage.set("messagesForViz", messagesForViz);
 
-                totalEmails++;
-                document.getElementById("emailsHeader").innerText = "Emails (" + totalEmails + "):";
+            totalEmails++;
+            document.getElementById("emailsHeader").innerText = "Emails (" + totalEmails + "):";
 
-                appendPreForMessage(resp.snippet);
-            }
+            appendPreForMessage(resp.snippet);
         }
     });
 }
