@@ -85,7 +85,7 @@ function listMessages() {
        if (messages && messages.length > 0) {
            for (var i = 0; i < messages.length; i++) {
                var messageId = messages[i].id;
-               printMessage(messageId);
+               getAndCreateMessage(messageId);
            }
        } else {
            appendPre('No Messages found.');
@@ -93,7 +93,7 @@ function listMessages() {
    });
 }
 
-function printMessage(id) {
+function getAndCreateMessage(id) {
     var request = gapi.client.gmail.users.messages.get({
        userId: 'me',
        id: id
