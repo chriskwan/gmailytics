@@ -35,7 +35,7 @@ function handleAuthResult(authResult) {
 }
 
 function handleMakeChartsClick(event) {
-    gmailytics.charts.emailsBySenderChart(messagesForViz);
+    gmailytics.charts.emailsBySender(messagesForViz);
 }
 
 /**

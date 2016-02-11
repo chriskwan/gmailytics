@@ -113,7 +113,7 @@
     };
 
     gmailytics.charts = {
-        emailsBySenderChart: function(messagesForViz) {
+        emailsBySender: function(messagesForViz) {
             makeEmailsBySenderChart(messagesForViz);
             drawEmailsBySenderChart();
         }
