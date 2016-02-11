@@ -113,9 +113,28 @@
     };
 
     gmailytics.charts = {
+        stats: function() {
+            //cwkTODO
+        },
         emailsBySender: function(messagesForViz) {
             makeEmailsBySenderChart(messagesForViz);
             drawEmailsBySenderChart();
+        },
+        emailsPerWeekday: function() {
+            //cwkTODO
+        },
+        emailsPerDay: function() {
+            //cwkTODO
+            //cwkTODO rename to differentiate from emailsPerWeekday
+        },
+        inboxSizeOverTime: function() {
+            //cwkTODO
+        },
+        emailSenderLocation: function() {
+            //cwkTODO
+        },
+        wordCloud: function() {
+            //cwkTODO
         }
     };
 })();
