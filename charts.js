@@ -2,6 +2,16 @@
     var dataForEmailsBySender;
     var totalEmails;
 
+    var reverseCompare = function(a,b) {
+        if (a.count < b.count) {
+            return 1;
+        }
+        if (a.count > b.count) {
+            return -1;
+        }
+        return 0;
+    };
+
     var makeEmailsBySenderChart = function(messagesForViz) {
         totalEmails = messagesForViz.length;
 
@@ -26,16 +36,6 @@
                 data.push(dict[prop]);
             }
         }
-
-        var reverseCompare = function(a,b) {
-            if (a.count < b.count) {
-                return 1;
-            }
-            if (a.count > b.count) {
-                return -1;
-            }
-            return 0;
-        };
 
         data.sort(reverseCompare);
 
