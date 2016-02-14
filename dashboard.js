@@ -1,5 +1,5 @@
 // From: https://developers.google.com/gmail/api/quickstart/js
-var CLIENT_ID = gmailytics.clientID;
+var CLIENT_ID = gmailytics.clientID; //cwkTODO show a popup prompting for this, add github.io to the app allowed domains
 
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
