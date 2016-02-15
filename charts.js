@@ -61,6 +61,7 @@
         var padding = 5; // space between bars
         var minBarWidth = 100;
 
+        //cwkTODO add an id to prevent duplicates
         var svg = d3.select("body").append("svg")
             .attr("width", w)
             .attr("height", h)
@@ -143,6 +144,42 @@
         dataForEmailsByWeekday = data;
     };
 
+    var drawEmailsPerWeekdayChart = function() {
+        var w = 500;
+        var h = 500;
+        var padding = 5;
+        var minBarHeight = 10;
+
+        //cwkTODO add an id to prevent duplicates
+        var svg = d3.select("body").append("svg")
+            .attr("width", w)
+            .attr("height", h)
+            .style({
+                "background-color": "blue"
+            });
+
+        var dataset = dataForEmailsByWeekday;
+
+        svg.selectAll("rect")
+            .data(dataset)
+            .enter()
+            .append("rect")
+            .attr({
+                x: function (d, i) {
+                    return i * ( (w / dataset.length) + padding );
+                },
+                y: function (d) {
+                    return h - (d.count * minBarHeight);
+                },
+                width: function (d) {
+                    return w / dataset.length;
+                },
+                height: function (d) {
+                    return d.count * minBarHeight;
+                }
+            });
+    };
+
     gmailytics.charts = {
         stats: function() {
             //cwkTODO
@@ -153,7 +190,7 @@
         },
         emailsPerWeekday: function() {
             makeEmailsPerWeekdayChart(messagesForViz);
-            //cwkTODO draw
+            drawEmailsPerWeekdayChart();
         },
         emailsPerDay: function() {
             //cwkTODO
