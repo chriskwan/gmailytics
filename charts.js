@@ -1,5 +1,6 @@
 (function() {
     var dataForEmailsBySender;
+    var dataForEmailsByWeekday; //cwkTODO move to separate class?
     var totalEmails;
 
     var reverseCompare = function(a,b) {
@@ -112,6 +113,36 @@
             });
     };
 
+    var makeEmailsPerWeekdayChart = function(messagesForViz) {
+        totalEmails = messagesForViz.length;
+
+        var dict = {};
+
+        for (var i=0; i<messagesForViz.length; i++) {
+            var weekday = messagesForViz[i].dayOfWeek;
+            if (!dict.hasOwnProperty(weekday)) {
+                dict[weekday] = {
+                    weekday: weekday, //cwkTODO add name of weekday too
+                    count: 1
+                };
+            } else {
+                dict[weekday].count++;
+            }
+        }
+
+        var data = [];
+
+        for (var prop in dict) {
+            if (dict.hasOwnProperty(prop)){
+                data.push(dict[prop]);
+            }
+        }
+
+        //data.sort(reverseCompare); //cwkTODO sort by weekday
+
+        dataForEmailsByWeekday = data;
+    };
+
     gmailytics.charts = {
         stats: function() {
             //cwkTODO
@@ -121,7 +152,8 @@
             drawEmailsBySenderChart();
         },
         emailsPerWeekday: function() {
-            //cwkTODO
+            makeEmailsPerWeekdayChart(messagesForViz);
+            //cwkTODO draw
         },
         emailsPerDay: function() {
             //cwkTODO

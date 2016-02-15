@@ -36,6 +36,7 @@ function handleAuthResult(authResult) {
 
 function handleMakeChartsClick(event) {
     gmailytics.charts.emailsBySender(messagesForViz);
+    gmailytics.charts.emailsPerWeekday(messagesForViz);
 }
 
 /**
