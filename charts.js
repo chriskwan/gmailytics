@@ -178,6 +178,26 @@
                     return d.count * minBarHeight;
                 }
             });
+
+        svg.selectAll("text")
+            .data(dataset)
+            .enter()
+            .append("text")
+            .text(function(d) {
+                return d.weekday + " (" + d.count + ")";
+            })
+            .attr({
+                x: function(d, i) {
+                    var barWidth = (w / dataset.length);
+                    return i * ( barWidth + padding ) + barWidth / 2.5;
+                },
+                y: function(d) {
+                    return h - (d.count * minBarHeight);
+                },
+                "font-family": "sans-serif",
+                "font-size": "12",
+                "fill": "#ffffff"
+            });
     };
 
     gmailytics.charts = {
