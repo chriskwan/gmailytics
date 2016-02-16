@@ -123,7 +123,8 @@
             var weekday = messagesForViz[i].dayOfWeek;
             if (!dict.hasOwnProperty(weekday)) {
                 dict[weekday] = {
-                    weekday: weekday, //cwkTODO add name of weekday too
+                    weekday: weekday,
+                    name: getWeekdayName(weekday),
                     count: 1
                 };
             } else {
@@ -142,6 +143,20 @@
         //data.sort(reverseCompare); //cwkTODO sort by weekday
 
         dataForEmailsByWeekday = data;
+    };
+
+    var getWeekdayName = function(weekDayIndex) {
+        var names = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ];
+
+        return names[weekDayIndex];
     };
 
     var drawEmailsPerWeekdayChart = function() {
@@ -184,12 +199,13 @@
             .enter()
             .append("text")
             .text(function(d) {
-                return d.weekday + " (" + d.count + ")";
+                return d.name + " (" + d.count + ")";
             })
             .attr({
                 x: function(d, i) {
                     var barWidth = (w / dataset.length);
-                    return i * ( barWidth + padding ) + barWidth / 2.5;
+                    var labelOffset = barWidth / 2 - barWidth / 5;
+                    return i * ( barWidth + padding ) + labelOffset;
                 },
                 y: function(d) {
                     return h - (d.count * minBarHeight);
