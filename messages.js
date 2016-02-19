@@ -80,8 +80,8 @@
             message.senderIPAddress = getSenderIPAddress(resp, headers);
             message.isRead = !hasLabel(resp, "UNREAD");
             message.isStarred = hasLabel(resp, "STARRED");
-            message.date = getHeaderValue(headers, "Date");
-            message.dayOfWeek = new Date(message.date).getDay();
+            message.date = new Date(getHeaderValue(headers, "Date"));
+            message.dayOfWeek = message.date.getDay();
             //message.location //cwkTODO pass senderIPAddress to API to get coordinates (Ref: https://ctrlq.org/code/20046-email-ip-address)
             message.snippet = resp.snippet;
 
