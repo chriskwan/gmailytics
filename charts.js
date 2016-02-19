@@ -8,9 +8,8 @@
         stats: function() {
             //cwkTODO
         },
-        emailsPerDay: function() {
+        emailsOverTime: function() {
             //cwkTODO
-            //cwkTODO rename to differentiate from emailsPerWeekday
         },
         inboxSizeOverTime: function() {
             //cwkTODO
