@@ -4,6 +4,7 @@
             gmailytics.charts.emailsBySender(messagesForViz);
             gmailytics.charts.emailsPerWeekday(messagesForViz);
         },
+        //cwkTODO move these to separate classes
         stats: function() {
             //cwkTODO
         },

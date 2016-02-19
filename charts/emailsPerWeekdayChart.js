@@ -3,7 +3,7 @@
 
     var dataForEmailsByWeekday;
 
-    var makeEmailsPerWeekdayChart = function(messagesForViz) {
+    var make = function(messagesForViz) {
         totalEmails = messagesForViz.length;
 
         var dict = {};
@@ -48,7 +48,7 @@
         return names[weekDayIndex];
     };
 
-    var drawEmailsPerWeekdayChart = function() {
+    var draw = function() {
         var w = 500;
         var h = 500;
         var padding = 5;
@@ -106,7 +106,7 @@
     };
 
     gmailytics.charts.emailsPerWeekday = function() {
-        makeEmailsPerWeekdayChart(messagesForViz);
-        drawEmailsPerWeekdayChart();
+        make(messagesForViz);
+        draw();
     };
 })();

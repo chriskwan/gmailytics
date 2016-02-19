@@ -13,7 +13,7 @@
         return 0;
     };
 
-    var makeEmailsBySenderChart = function(messagesForViz) {
+    var make = function(messagesForViz) {
         totalEmails = messagesForViz.length;
 
         var dict = {};
@@ -55,7 +55,7 @@
         return ((count / totalEmails) * 100).toFixed(2);
     }
 
-    var drawEmailsBySenderChart = function() {
+    var draw = function() {
         var w = 500;
         var h = 500;
         var padding = 5; // space between bars
@@ -115,7 +115,7 @@
     };
 
     gmailytics.charts.emailsBySender = function(messagesForViz) {
-        makeEmailsBySenderChart(messagesForViz);
-        drawEmailsBySenderChart();
+        make(messagesForViz);
+        draw();
     };
 })();
