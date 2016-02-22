@@ -7,19 +7,22 @@
         //cwkTODO refactor this to utility method since it seems the same for all charts
         for (var i=0; i<messagesForViz.length; i++) {
             var date = messagesForViz[i].date;
-            if (!dict.hasOwnProperty(date)) {
 
-                // Create new Dates in case they come in as string
-                // (i.e. if this data was from local storage and was serialized)
-                var dateObj = new Date(date);
+            // Create new Dates in case they come in as string
+            // (i.e. if this data was from local storage and was serialized)
+            var dateObj = new Date(date);
 
-                dict[date] = {
+            // clear the time part, so we can compare only using the date
+            dateObj.setHours(0, 0, 0, 0);
+
+            if (!dict.hasOwnProperty(dateObj)) {
+                dict[dateObj] = {
                     date: dateObj,
                     count: 1,
                     name: dateObj.toString()
                 };
             } else {
-                dict[date].count++;
+                dict[dateObj].count++;
             }
         }
 
@@ -42,7 +45,7 @@
 
     var draw = function() {
         var w = 500;
-        var h = 500;
+        var h = 200;
         var padding = 20;
 
         var svg = d3.select("body")
@@ -81,7 +84,9 @@
                 cy: function(d) {
                     return yScale(d.count);
                 },
-                r: 4
+                r: function(d) {
+                    return d.count;
+                }
             })
     };
 
